@@ -11,11 +11,11 @@ services:
     volumes: ["pg_data:/var/lib/postgresql/data"]
 
   directus:
-    image: directus/directus:10.8
+    image: directus/directus:10.11
     restart: unless-stopped
     environment:
-      KEY: 00000000000000000000000000000000
-      SECRET: 00000000000000000000000000000000
+      KEY: 255d861b70c2f4d3c8c0c8e5c7c2b8c4e5c8c0c8e5c7c2b8c4e5c8c0c8e5c7c2
+      SECRET: 8c4e5c8c0c8e5c7c2b8c4e5c8c0c8e5c7c2b8c4e5c8c0c8e5c7c2b8c4e5c8c0
       DB_CLIENT: pg
       DB_HOST: postgres
       DB_PORT: 5432
@@ -30,5 +30,14 @@ services:
     restart: unless-stopped
     ports: ["1883:1883"]
     volumes: ["./config/mosquitto.conf:/mosquitto/config/mosquitto.conf"]
+
+  duckdb:
+    image: python:3.11-slim
+    restart: unless-stopped
+    volumes:
+      - "./data:/data"
+      - "./scripts:/scripts"
+    depends_on: [mosquitto]
+    command: bash -c "pip install paho-mqtt duckdb && python /scripts/mqtt_to_duckdb.py"
 
 volumes: { pg_data: {} }
